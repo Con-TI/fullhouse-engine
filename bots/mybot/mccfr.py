@@ -100,58 +100,52 @@ def betting_level(state):
 
 def stack_bucket(state):
     bb = max(state["current_bet"], 100)
-
     eff = min(p["stack"] for p in state["players"] if not p["is_folded"])
-
     eff_bb = eff / bb
-
     if eff_bb < 10:
         return "0-10"
-
     if eff_bb < 20:
         return "10-20"
-
     if eff_bb < 40:
         return "20-40"
-
     if eff_bb < 80:
         return "40-80"
-
     return "80+"
 
 def position_bucket(state):
     seat = state["seat_to_act"]
     n = len(state["players"])
-    
     if seat == 0:
         return "SB"
     if seat == 1:
         return "BB"
     if seat >= n - 2:
         return "UTG"
-
     return "MP" # everything else
 
 RANKS = "23456789TJQKA"
 
-def preflop_bucket(cards):
-    r1 = RANKS.index(cards[0][0])
-    r2 = RANKS.index(cards[1][0])
-
-    suited = cards[0][1] == cards[1][1]
-
-    hi = max(r1, r2)
-    lo = min(r1, r2)
-
-    if hi == lo:
-        return f"P{hi}"
-
-    return f"{hi}_{lo}_{int(suited)}"
+def bucketing(street, players, cards):
+    if street == "preflop":
+        r1 = RANKS.index(cards[0][0])
+        r2 = RANKS.index(cards[1][0])
+        suited = cards[0][1] == cards[1][1]
+        hi = max(r1, r2)
+        lo = min(r1, r2)
+        if hi == lo:
+            return f"P{hi}"
+        return f"{hi}_{lo}_{int(suited)}"
+    elif street == "flop":
+        ...
+    elif street == "turn":
+        ...
+    elif street == "river":
+        ...
 
 def infoset_key(state):
     return "|".join([
         state["street"],
-        preflop_bucket(state["your_cards"]),
+        bucketing(state[""],state[""],state["your_cards"]),
         stack_bucket(state),
         position_bucket(state),
         betting_level(state),
