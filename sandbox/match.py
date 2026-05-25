@@ -222,7 +222,7 @@ def _inject_match_log(state, match_log):
     return state
 
 
-def run_match(match_id, bot_paths, n_hands=400, verbose=False, seed=None):
+def run_match(match_id, bot_paths, n_hands=400, verbose=True, seed=None):
     bot_ids = list(bot_paths.keys())
     n = len(bot_ids)
     assert 2 <= n <= 9, "Need 2-9 bots, got " + str(n)
@@ -257,7 +257,6 @@ def run_match(match_id, bot_paths, n_hands=400, verbose=False, seed=None):
 
             result = _play_hand(engine, procs, alive, match_action_log, hand_num, verbose)
             hand_log.append({"hand_num": hand_num, "hand_id": hand_id, **result})
-
             for bid, s in result["final_stacks"].items():
                 stacks[bid] = s
 
@@ -265,7 +264,6 @@ def run_match(match_id, bot_paths, n_hands=400, verbose=False, seed=None):
 
             if verbose and hand_num % 25 == 0:
                 _print_stacks(hand_num, n_hands, stacks)
-
     finally:
         for p in procs.values():
             p.stop()
@@ -283,7 +281,7 @@ def run_match(match_id, bot_paths, n_hands=400, verbose=False, seed=None):
     }
 
 
-def _play_hand(engine, procs, active_bots, match_action_log, hand_num, verbose):
+def _play_hand(engine, procs, active_bots, match_action_log, hand_num, verbose=True):
     state = _inject_match_log(engine.start_hand(), match_action_log)
     steps = 0
 
@@ -302,6 +300,7 @@ def _play_hand(engine, procs, active_bots, match_action_log, hand_num, verbose):
             "action":   action.get("action"),
             "amount":   action.get("amount"),
         })
+
 
         state = _inject_match_log(engine.apply_action(seat, action), match_action_log)
         steps += 1
