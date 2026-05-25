@@ -35,7 +35,9 @@ pip3 install flask numpy scipy treys scikit-learn
 python3 demo.py
 ```
 
-Open `http://localhost:5000` — you'll see 6 reference bots playing each other live with a real-time leaderboard and hand replay.
+Open `http://localhost:5001` — you'll see 6 reference bots playing each other live with a real-time leaderboard and hand replay.
+
+> **macOS users**: we use port 5001 instead of the Flask default 5000 because macOS Monterey+ binds port 5000 to AirPlay Receiver. Override with `DEMO_PORT=8080 python3 demo.py` if 5001 is taken too.
 
 > Hitting a build error on `eval7`? You're not alone — modern pip's build
 > isolation breaks it. The two-step install above is the workaround. We have
@@ -132,6 +134,20 @@ def decide(state):
 
 ---
 
+## Submitting your bot
+
+Once your bot validates cleanly locally (`make validate BOT=bots/mybot/bot.py`), upload it at **[portal.fullhousehackathon.com](https://portal.fullhousehackathon.com)**.
+
+**Deadline:** **31 May 2026, 23:59 UTC.** Late submissions don't enter the qualifier.
+
+The portal runs `sandbox/validator.py` against your upload and rejects anything that fails — so a green local validation is the bar to clear. Submit either a single `bot.py` or a `.zip` archive with `bot.py` at the root plus an optional `data/` directory (see [Submission formats](#submission-formats) above for limits).
+
+If validation passes, your bot is queued for the **1 June qualifier**. You can re-upload up to the deadline; only your most recent successful submission counts.
+
+**Patch window:** between Day 1 (qualifier) and Day 5 (finals), you can replace your bot with an updated version once. Same submission flow; your bot ID stays the same across all rounds.
+
+---
+
 ## Running matches
 
 ```bash
@@ -139,7 +155,7 @@ def decide(state):
 python3 sandbox/match.py bots/mybot/bot.py bots/shark/bot.py --hands 400
 
 # full tournament simulation (3 Swiss rounds)
-# use the demo UI at http://localhost:5000
+# use the demo UI at http://localhost:5001
 ```
 
 ---
@@ -161,7 +177,7 @@ Top 64 play a single-elimination bracket live on stage. Winner takes the prize p
 
 ## Reference bots
 
-Four bots are included to test against:
+Five bots are included to test against:
 
 | Bot | Strategy |
 |-----|----------|
@@ -169,6 +185,7 @@ Four bots are included to test against:
 | `bots/aggressor/bot.py` | Raises constantly regardless of hand |
 | `bots/mathematician/bot.py` | Calls only when getting 3:1 pot odds |
 | `bots/shark/bot.py` | Tight preflop, position-aware, value bets |
+| `bots/ref_bot_2/bot.py` | Pot-odds caller — heuristic reference baseline |
 
 ---
 
@@ -188,7 +205,7 @@ demo.py         Quick local demo
 
 | Layer | Technology |
 |-------|------------|
-| Game engine | Python 3.9+ |
+| Game engine | Python 3.10 (eval7 needs `longintrepr.h`, removed in 3.11+) |
 | Hand evaluation | eval7 (same as MIT Pokerbots) |
 | Bot isolation | 2s time limit, no network, no file I/O |
 
